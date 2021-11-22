@@ -2,3 +2,7 @@ CREATE SEQUENCE s_pur
 start with 100001
 INCREMENT BY 1
 ;
+CREATE SEQUENCE s_logs
+start with 1001
+INCREMENT BY 1
+;
