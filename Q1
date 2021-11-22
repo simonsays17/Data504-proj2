@@ -1,1 +1,4 @@
-
+CREATE SEQUENCE s_pur
+start with 100001
+INCREMENT BY 1
+;
