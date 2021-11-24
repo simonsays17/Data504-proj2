@@ -11,7 +11,7 @@ create or replace procedure show_employees(new_employees out employees%rowtype)
 is
 begin
   select *
-  into new employees
+  into new_employees
   from employees;
 end;
 /
