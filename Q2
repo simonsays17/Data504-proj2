@@ -1,0 +1,23 @@
+create procedure show_customers
+as
+select *
+from customers;
+
+create procedure show_employees
+as 
+select *
+from employees;
+
+create procedure show_products
+as 
+select *
+from products;
+
+create procedure show_purchases
+as 
+select *
+from purchases;
+
+create procedure show_logs
+as select *
+from logs;
