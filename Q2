@@ -1,23 +1,34 @@
-create procedure show_customers
-as
-select *
-from customers;
+create procedure show_customers is
+  new_customers customers%rowtype;
+begin
+  select * into new_customers
+  from customers;
+end;
 
-create procedure show_employees
-as 
-select *
-from employees;
+create procedure show_employees is
+  new_employees employees%rowtype;
+begin
+  select * into new employees
+  from employees;
+end;
 
-create procedure show_products
-as 
-select *
-from products;
+create procedure show_products is
+  new_products products%rowtype;
+begin
+  select * into new_products
+  from products;
+end;
 
-create procedure show_purchases
-as 
-select *
-from purchases;
+create procedure show_purchases is
+  new_purchases purchases%rowtype;
+begin 
+  select * into new_purchases
+  from purchases;
+end;
 
-create procedure show_logs
-as select *
-from logs;
+create procedure show_logs is
+  new_logs logs%rowtype;
+begin
+  select * into new_logs
+  from logs;
+end;
