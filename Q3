@@ -1,0 +1,16 @@
+set serveroutput on
+create procedure purchases_made(cust_id in customers.cid%type) is
+cust_name customers.name%type;
+pur_pid purchases.pid%type;
+pur_pdate purchases.pur_date%type;
+pur_qty purchases.qty%type;
+pur_unitprice purchases.unit_price%type;
+pur_total purchases.total%type;
+begin
+	select c.name, p.pid, p.pur_date, p.qty, p.unit_price, p.total into cust_name, pur_pid, pur_pdate, pur_qty, pur_unitprice, pur_total
+	from customers c, purchases p
+	where c.cid=p.cid and c.cid=cust_id;
+	dbms_output.put_line('Customer Purchases:'|| cust_name, pur_pid, pur_pdate, pur_qty, pur_unitprice, pur_total);
+end;
+/
+show errors
