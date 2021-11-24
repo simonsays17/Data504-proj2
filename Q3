@@ -12,4 +12,4 @@ begin
 	where c.cid=p.cid and c.cid=cust_id;
 end;
 /
-
+show errors
