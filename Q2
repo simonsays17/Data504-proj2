@@ -49,6 +49,5 @@ declare
 new_employees var_char(1000);
 begin
   show_employees(new_employees)
-  dbms_ouput.put_line(new_employees);
 end;
 /
