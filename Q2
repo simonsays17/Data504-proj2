@@ -1,34 +1,54 @@
-create procedure show_customers is
-  new_customers customers%rowtype;
+create or replace procedure show_customers(new_customers out customers%rowtype)
+is
 begin
-  select * into new_customers
+  select * 
+  into new_customers
   from customers;
 end;
+/
 
-create procedure show_employees is
-  new_employees employees%rowtype;
+create or replace procedure show_employees(new_employees out employees%rowtype) 
+is
 begin
-  select * into new employees
+  select *
+  into new employees
   from employees;
 end;
+/
 
-create procedure show_products is
-  new_products products%rowtype;
+create or replace procedure show_products(new_products out products%rowtype)
+is
 begin
-  select * into new_products
+  select * 
+  into new_products
   from products;
 end;
+/
 
-create procedure show_purchases is
-  new_purchases purchases%rowtype;
+create or replace procedure show_purchases(new_purchases out purchases%rowtype)
+is
 begin 
-  select * into new_purchases
+  select * 
+  into new_purchases
   from purchases;
 end;
+/
 
-create procedure show_logs is
-  new_logs logs%rowtype;
+create or replace procedure show_logs(new_logs out logs%rowtype) 
+is
 begin
-  select * into new_logs
+  select * 
+  into new_logs
   from logs;
 end;
+/
+
+## Implementation
+
+declare
+new_employees var_char(1000);
+begin
+  show_employees(new_employees)
+  dbms_ouput.put_line(new_employees);
+end;
+/
