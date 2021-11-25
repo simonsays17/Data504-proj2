@@ -7,15 +7,18 @@ begin
 end;
 /
 
-create or replace procedure show_employees(new_employees out employees%rowtype) 
+set serveroutput on
+create or replace procedure show_employees(new_employees out employees%rowtype, status out boolean) 
 is
 begin
   select *
   into new_employees
   from employees;
+  status:=true;
+exception
+  when no_data_found then status:=false;
 end;
 /
-
 create or replace procedure show_products(new_products out products%rowtype)
 is
 begin
@@ -24,7 +27,6 @@ begin
   from products;
 end;
 /
-
 create or replace procedure show_purchases(new_purchases out purchases%rowtype)
 is
 begin 
@@ -33,7 +35,6 @@ begin
   from purchases;
 end;
 /
-
 create or replace procedure show_logs(new_logs out logs%rowtype) 
 is
 begin
@@ -43,11 +44,16 @@ begin
 end;
 /
 
-## Implementation
-
+set serveroutput on
 declare
-new_table employees%rowtype;
+v_employees employees%rowtype;
 begin
-  show_employees(new_table)
+  show_employees(v_employees);
+  if(status) then 
+    dbms_output.put_line(v_employees);
+  else 
+    dbms_output.put_line('No data');
+  end if;
 end;
 /
+
