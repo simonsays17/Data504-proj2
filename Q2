@@ -46,8 +46,8 @@ end;
 ## Implementation
 
 declare
-new_employees var_char(1000);
+new_table employees%rowtype;
 begin
-  show_employees(new_employees)
+  show_employees(new_table)
 end;
 /
