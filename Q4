@@ -1,3 +1,11 @@
-CREATE FUNCTION number_customers(c_pid in varchar(20))
-RETURN (SELECT count(c.cid) from customers c, purchases p, where c.cid=p.cid and p.pid=c_pid);
+CREATE or REPLACE FUNCTION number_customers(n_pid Purchases.pid%TYPE)
+	RETURN NUMBER
+	IS cust_cnt NUMBER;
+	BEGIN 
+		SELECT COUNT(c.cid) 
+		INTO cust_cnt
+		FROM customers c, purchases p
+		WHERE c.cid=p.cid AND p.pid=n_pid;
+		RETURN(cust_cnt);
+	END;
 /
