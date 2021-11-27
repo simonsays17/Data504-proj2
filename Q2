@@ -1,45 +1,36 @@
+set serveroutput on
 create or replace procedure show_customers(new_customers out customers%rowtype)
 is
 begin
-  select * 
-  into new_customers
-  from customers;
+select cid, name, telephone#, visits_made, last_visit_date into new_customers
+from customers;
 end;
-/
 
-set serveroutput on
-create or replace procedure show_employees(new_employees out employees%rowtype, status out boolean) 
+create or replace procedure show_employees(new_employees out employees%rowtype) 
 is
 begin
-  select *
-  into new_employees
+  select eid, name, telephone#, email into new employees
   from employees;
-  status:=true;
-exception
-  when no_data_found then status:=false;
 end;
-/
+
 create or replace procedure show_products(new_products out products%rowtype)
 is
 begin
-  select * 
-  into new_products
+  select pid, name, qoh, qoh_threshold, regular_price, discnt_rate into new_products
   from products;
 end;
-/
+
 create or replace procedure show_purchases(new_purchases out purchases%rowtype)
 is
 begin 
-  select * 
-  into new_purchases
+  select pur#, eid, pid, cid, pur_date, qty, unit_price, total, saving into new_purchases
   from purchases;
 end;
-/
+
 create or replace procedure show_logs(new_logs out logs%rowtype) 
 is
 begin
-  select * 
-  into new_logs
+  select log#, user_name, operation, op_time, table_name, tuple_pkey into new_logs
   from logs;
 end;
 /
@@ -48,12 +39,7 @@ set serveroutput on
 declare
 v_employees employees%rowtype;
 begin
-  show_employees(v_employees);
-  if(status) then 
-    dbms_output.put_line(v_employees);
-  else 
-    dbms_output.put_line('No data');
-  end if;
+show_employees(v_employees);
 end;
 /
 
