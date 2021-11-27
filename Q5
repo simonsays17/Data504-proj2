@@ -1,0 +1,10 @@
+set serveroutput on
+create or replace procedure add_customer(c_id in customers.cid%type, c_name in customers.name%type, c_telephone# in customers.telephone#%type)
+is
+c_visit_date customers.last_visit_date%type;
+begin
+select to_char(sysdate,'dd-mon-yy') into c_visit_date
+from dual;
+insert into customers values(c_id, c_name, c_telephone#, 1, c_visit_date);
+end;
+/
