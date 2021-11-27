@@ -23,5 +23,20 @@ when invalid_qty then
 status:= false;
 dbms_output.put_line('Insufficient qoh');
 end;
+
+create or replace trigger qoh_mod
+after insert on purchases
+for each row
+declare low_qoh exception;
+begin
+update products set qoh=qoh-purchases.qty;
+if (:new.qoh<qoh_threshold) then raise low qoh;
+end if;
+exception
+when low_qoh then
+dbms_output.put_line(“The current qoh of the product is below the required threshold and new supply is required.”);
+update products set qoh=qoh_threshold+10;
+dbms_output.put_line("New qoh is " :new.qoh);
+end;
 /
 show errors
