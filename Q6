@@ -1,0 +1,27 @@
+set serveroutput on
+create or replace procedure add_purchase(e_id in purchases.eid%type, p_id in purchases.pid%type, c_id in purchases.cid%type, pur_qty in purchases.qty%type, pur_unit_price in purchases.unit_price%type)
+is
+p_pur_date purchases.pur_date%type;
+p_regular_price products.regular_price%type;
+p_qoh products.qoh%type;
+begin
+select to_char(sysdate,'dd-mon-yy') into p_pur_date
+from dual;
+select regular_price into p_regular_price
+from purchases p, products r
+where p.pid=r.pid and p.pid=p_id;
+select qoh into p_qoh
+from purchases p, products r
+where p.pid=r.pid and p.pid=p_id;
+insert into purchases values(pur#_seq.nextval, e_id, p_id, c_id, p_pur_date, pur_qty, pur_unit_price, pur_qty*pur_unit_price, p_regular_price-pur_qty*pur_unit_price);
+status:= true;
+if pur_qty>p_qoh then
+raise invalid_qty;
+end if;
+exception
+when invalid_qty then
+status:= false;
+dbms_output.put_line('Insufficient qoh');
+end;
+/
+show errors
