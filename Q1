@@ -1,11 +1,11 @@
-CREATE or replace SEQUENCE pur#_seq
+CREATE SEQUENCE pur#_seq
 start with 100001
 INCREMENT BY 1
 NOCACHE
 NOCYCLE;
 /
 
-CREATE or replace SEQUENCE log#_seq
+CREATE SEQUENCE log#_seq
 start with 1001
 INCREMENT BY 1
 NOCACHE
