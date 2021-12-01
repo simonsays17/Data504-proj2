@@ -34,15 +34,16 @@ declare
 low_qoh exception;
 begin
 update products set qoh=qoh-:new.qty
-where pid=:new.pid;
-if (:new.qoh<qoh_threshold) then raise low qoh;
+from products, purchases;
+if (qoh<qoh_threshold) then raise low_qoh;
 end if;
 exception
 when low_qoh then
-dbms_output.put_line(“The current qoh of the product is below the required threshold and new supply is required.”);
+dbms_output.put_line('The current qoh of the product is below the required threshold and new supply is required.');
 update products set qoh=qoh_threshold+10;
-dbms_output.put_line("New qoh is " :new.qoh);
+dbms_output.put_line('New qoh is ' ||qoh);
 end;
+/
 
 create or replace trigger visit_trig
 after insert on purchases
