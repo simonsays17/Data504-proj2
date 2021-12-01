@@ -4,6 +4,8 @@ is
 p_pur_date purchases.pur_date%type;
 p_regular_price products.regular_price%type;
 p_qoh products.qoh%type;
+status boolean;
+invalid_qty exception;
 begin
 select to_char(sysdate,'dd-mon-yy') into p_pur_date
 from dual;
@@ -23,6 +25,7 @@ when invalid_qty then
 status:= false;
 dbms_output.put_line('Insufficient qoh');
 end;
+/
 
 create or replace trigger qoh_trig
 after insert on purchases
