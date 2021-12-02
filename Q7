@@ -1,5 +1,5 @@
 #First trigger for inseriting new tuple in Customers
-#gets error (misisng comma)
+#gets error (PL/SQL: ORA-00917: missing comma) 
 create or replace trigger add_cust_log 
 after insert on Customers
 for EACH ROW
@@ -8,6 +8,20 @@ BEGIN
  
 	insert into logs
 	Values(s_logs.nextval, user, 'INSERT', SYSDATE, 'Customers' , cid:new.cid);
+
+	
+END;
+/
+
+#trigger for when updating customer last visit
+#error with cid I believe ( PL/SQL: ORA-02289: sequence does not exist)
+
+create or replace trigger update_cust
+after update of last_visit_date on customers 
+for EACH ROW
+BEGIN
+insert into logs 
+ Values(s_logs.nextval, user, 'UPDATE', SYSDATE, 'Customers' , :old.cid); 
 
 	
 END;
