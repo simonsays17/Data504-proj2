@@ -1,0 +1,14 @@
+#First trigger for inseriting new tuple in Customers
+#gets error (misisng comma)
+create or replace trigger add_cust_log 
+after insert on Customers
+for EACH ROW
+BEGIN
+
+ 
+	insert into logs
+	Values(s_logs.nextval, user, 'INSERT', SYSDATE, 'Customers' , cid:new.cid);
+
+	
+END;
+/
