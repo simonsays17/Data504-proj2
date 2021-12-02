@@ -26,3 +26,19 @@ insert into logs
 	
 END;
 /
+
+#trigger for updating customer Vists
+#same error asa previous
+
+create or replace trigger cust_visits_made 
+after update of visits_made on Customers
+for EACH ROW
+BEGIN
+
+ 
+	insert into logs
+	Values(s_logs.nextval, user, 'UPDATE', SYSDATE, 'Customers' , :old.cid);
+
+	
+END;
+/
