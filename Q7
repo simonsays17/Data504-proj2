@@ -42,3 +42,32 @@ BEGIN
 	
 END;
 /
+
+#trigger for insert into purchases
+#same problem as first trigger
+create or replace trigger add_pur_log 
+after insert on Purchases
+for EACH ROW
+BEGIN
+
+insert into logs
+Values(s_logs.nextval, user, 'INSERT', SYSDATE, 'Purchases' , :new.pur#);
+
+	
+END;
+/
+#trigger for qoh update
+#same problemm is trigger 2 and 3
+
+create or replace trigger qoh_update
+after update of qoh on Products
+for EACH ROW
+BEGIN
+
+ 
+	insert into logs
+	Values(s_logs.nextval, user, 'UPDATE', SYSDATE, 'Products' , :old.pid);
+
+	
+END;
+/
