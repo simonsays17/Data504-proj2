@@ -7,7 +7,7 @@ BEGIN
 
  
 	insert into logs
-	Values(s_logs.nextval, user, 'INSERT', SYSDATE, 'Customers' , cid:new.cid);
+	Values(s_logs.nextval, user, 'INSERT', SYSDATE, 'Customers' , :new.cid);
 
 	
 END;
