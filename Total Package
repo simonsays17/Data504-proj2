@@ -1,0 +1,236 @@
+create table logs
+(log# number(4) primary key,
+user_name varchar2(12) not null,
+operation varchar2(6) not null,
+op_time date not null,
+table_name varchar2(20) not null,
+tuple_pkey varchar2(6)); 
+
+CREATE SEQUENCE pur#_seq
+start with 100001
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+/
+
+CREATE SEQUENCE log#_seq
+start with 1001
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+/
+
+set serveroutput on
+create or replace procedure show_customers(new_customers out customers%rowtype)
+is
+begin
+select cid, name, telephone#, visits_made, last_visit_date into new_customers
+from customers;
+end;
+
+create or replace procedure show_employees(new_employees out employees%rowtype) 
+is
+begin
+  select eid, name, telephone#, email into new employees
+  from employees;
+end;
+/
+create or replace procedure show_products(new_products out products%rowtype)
+is
+begin
+  select pid, name, qoh, qoh_threshold, regular_price, discnt_rate into new_products
+  from products;
+end;
+/
+create or replace procedure show_purchases(new_purchases out purchases%rowtype)
+is
+begin 
+  select pur#, eid, pid, cid, pur_date, qty, unit_price, total, saving into new_purchases
+  from purchases;
+end;
+/
+create or replace procedure show_logs(new_logs out logs%rowtype) 
+is
+begin
+  select log#, user_name, operation, op_time, table_name, tuple_pkey into new_logs
+  from logs;
+end;
+/
+
+set serveroutput on
+declare
+v_employees employees%rowtype;
+begin
+show_employees(v_employees);
+end;
+/
+set serveroutput on
+create or replace procedure purchases_made(cust_id in customers.cid%type)
+is 
+cust_name customers.name%type;
+pur_pid purchases.pid%type;
+pur_pdate purchases.pur_date%type;
+pur_qty purchases.qty%type;
+pur_unitprice purchases.unit_price%type;
+pur_total purchases.total%type;
+begin
+	select c.name, p.pid, p.pur_date, p.qty, p.unit_price, p.total into cust_name, pur_pid, pur_pdate, pur_qty, pur_unitprice, pur_total
+	from customers c, purchases p
+	where c.cid=p.cid and c.cid=cust_id;
+end;
+/
+CREATE or REPLACE FUNCTION number_customers(n_pid Purchases.pid%TYPE)
+	RETURN NUMBER
+	IS cust_cnt NUMBER;
+	BEGIN 
+		SELECT COUNT(c.cid) 
+		INTO cust_cnt
+		FROM customers c, purchases p
+		WHERE c.cid=p.cid AND p.pid=n_pid;
+		RETURN(cust_cnt);
+	END;
+/
+set serveroutput on
+create or replace procedure add_customer(c_id in customers.cid%type, c_name in customers.name%type, c_telephone# in customers.telephone#%type)
+is
+c_visit_date customers.last_visit_date%type;
+begin
+select to_char(sysdate,'dd-mon-yy') into c_visit_date
+from dual;
+insert into customers values(c_id, c_name, c_telephone#, 1, c_visit_date);
+end;
+/
+set serveroutput on
+create or replace procedure add_purchase(e_id in purchases.eid%type, p_id in purchases.pid%type, c_id in purchases.cid%type, pur_qty in purchases.qty%type, pur_unit_price in purchases.unit_price%type)
+is
+p_pur_date purchases.pur_date%type;
+p_regular_price products.regular_price%type;
+p_qoh products.qoh%type;
+status boolean;
+invalid_qty exception;
+begin
+select to_char(sysdate,'dd-mon-yy') into p_pur_date
+from dual;
+select regular_price into p_regular_price
+from purchases p, products r
+where p.pid=r.pid and p.pid=p_id;
+select qoh into p_qoh
+from purchases p, products r
+where p.pid=r.pid and p.pid=p_id;
+insert into purchases values(pur#_seq.nextval, e_id, p_id, c_id, p_pur_date, pur_qty, pur_unit_price, pur_qty*pur_unit_price, p_regular_price-pur_qty*pur_unit_price);
+status:= true;
+if pur_qty>p_qoh then
+raise invalid_qty;
+end if;
+exception
+when invalid_qty then
+status:= false;
+dbms_output.put_line('Insufficient qoh');
+end;
+/
+
+create or replace trigger qoh_trig
+after insert on purchases
+for each row
+declare
+qoh products.qoh%type;
+nqoh products.qoh%type;
+nqoh_t products.qoh_threshold%type;
+low_qoh exception;
+begin
+update products set products.qoh = products.qoh - :new.qty where pid = :new.pid;
+select qoh, qoh_threshold into nqoh, nqoh_t from products where pid = :new.pid;
+if (qoh<nqoh_t) then raise low_qoh;
+end if;
+exception
+when low_qoh then
+dbms_output.put_line('The current qoh of the product is below the required threshold and new supply is required.');
+update products set qoh=qoh_threshold+10;
+dbms_output.put_line('New qoh is ' ||qoh);
+end;
+/
+
+create or replace trigger visit_trig
+after insert on purchases
+for each row
+declare 
+new_visit customers.last_visit_date%type;
+new_day exception;
+begin 
+select last_visit_date into new_visit
+from customers c, purchases p
+where c.cid=p.cid and pur#=:new.pur#;
+if (:new.pur_date!= new_visit) then raise new_day;
+end if;
+exception
+when new_day then
+update customers set last_visit_date=:new.pur_date;
+update customers set visits_made=visits_made+1;
+end;
+/
+create or replace trigger add_cust_log 
+after insert on Customers
+for EACH ROW
+BEGIN
+
+ 
+	insert into logs
+	Values(log#_seq.nextval, user, 'INSERT', SYSDATE, 'Customers' , :new.cid);
+
+	
+END;
+/
+
+
+create or replace trigger update_cust
+after update of last_visit_date on customers 
+for EACH ROW
+BEGIN
+insert into logs 
+ Values(log#_seq.nextval, user, 'UPDATE', SYSDATE, 'Customers' , :old.cid); 
+
+	
+END;
+/
+
+
+
+create or replace trigger cust_visits_made 
+after update of visits_made on Customers
+for EACH ROW
+BEGIN
+
+ 
+	insert into logs
+	Values(log#_seq.nextval, user, 'UPDATE', SYSDATE, 'Customers' , :old.cid);
+
+	
+END;
+/
+
+
+create or replace trigger add_pur_log 
+after insert on Purchases
+for EACH ROW
+BEGIN
+
+insert into logs
+Values(log#_seq.nextval, user, 'INSERT', SYSDATE, 'Purchases' , :new.pur#);
+
+	
+END;
+/
+
+
+create or replace trigger qoh_update
+after update of qoh on Products
+for EACH ROW
+BEGIN
+
+ 
+	insert into logs
+	Values(log#_seq.nextval, user, 'UPDATE', SYSDATE, 'Products' , :old.pid);
+
+	
+END;
+/
