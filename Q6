@@ -30,12 +30,15 @@ end;
 create or replace trigger qoh_trig
 after insert on purchases
 for each row
-declare 
+declare
+qoh products.qoh%type;
+nqoh products.qoh%type;
+nqoh_t products.qoh_threshold%type;
 low_qoh exception;
 begin
-update products set qoh=qoh-:new.qty
-from products, purchases;
-if (qoh<qoh_threshold) then raise low_qoh;
+update products set products.qoh = products.qoh - :new.qty where pid = :new.pid;
+select qoh, qoh_threshold into nqoh, nqoh_t from products where pid = :new.pid;
+if (qoh<nqoh_t) then raise low_qoh;
 end if;
 exception
 when low_qoh then
