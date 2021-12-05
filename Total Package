@@ -58,13 +58,6 @@ end;
 /
 
 set serveroutput on
-declare
-v_employees employees%rowtype;
-begin
-show_employees(v_employees);
-end;
-/
-set serveroutput on
 create or replace procedure purchases_made(cust_id in customers.cid%type)
 is 
 cust_name customers.name%type;
@@ -77,6 +70,8 @@ begin
 	select c.name, p.pid, p.pur_date, p.qty, p.unit_price, p.total into cust_name, pur_pid, pur_pdate, pur_qty, pur_unitprice, pur_total
 	from customers c, purchases p
 	where c.cid=p.cid and c.cid=cust_id;
+exception when NO_DATA_FOUND then
+	dbms_output.put_line('Invalid customer id');
 end;
 /
 CREATE or REPLACE FUNCTION number_customers(n_pid Purchases.pid%TYPE)
@@ -88,6 +83,8 @@ CREATE or REPLACE FUNCTION number_customers(n_pid Purchases.pid%TYPE)
 		FROM customers c, purchases p
 		WHERE c.cid=p.cid AND p.pid=n_pid;
 		RETURN(cust_cnt);
+	EXCEPTION when NO_DATA_FOUND then
+		dbms_output.put_line('Invalid product id');
 	END;
 /
 set serveroutput on
