@@ -1,5 +1,4 @@
-#First trigger for inseriting new tuple in Customers
-#gets error (PL/SQL: ORA-00917: missing comma) 
+
 create or replace trigger add_cust_log 
 after insert on Customers
 for EACH ROW
@@ -7,28 +6,25 @@ BEGIN
 
  
 	insert into logs
-	Values(s_logs.nextval, user, 'INSERT', SYSDATE, 'Customers' , :new.cid);
+	Values(log#_seq.nextval, user, 'INSERT', SYSDATE, 'Customers' , :new.cid);
 
 	
 END;
 /
 
-#trigger for when updating customer last visit
-#error with cid I believe ( PL/SQL: ORA-02289: sequence does not exist)
 
 create or replace trigger update_cust
 after update of last_visit_date on customers 
 for EACH ROW
 BEGIN
 insert into logs 
- Values(s_logs.nextval, user, 'UPDATE', SYSDATE, 'Customers' , :old.cid); 
+ Values(log#_seq.nextval, user, 'UPDATE', SYSDATE, 'Customers' , :old.cid); 
 
 	
 END;
 /
 
-#trigger for updating customer Vists
-#same error asa previous
+
 
 create or replace trigger cust_visits_made 
 after update of visits_made on Customers
@@ -37,27 +33,25 @@ BEGIN
 
  
 	insert into logs
-	Values(s_logs.nextval, user, 'UPDATE', SYSDATE, 'Customers' , :old.cid);
+	Values(log#_seq.nextval, user, 'UPDATE', SYSDATE, 'Customers' , :old.cid);
 
 	
 END;
 /
 
-#trigger for insert into purchases
-#same problem as first trigger
+
 create or replace trigger add_pur_log 
 after insert on Purchases
 for EACH ROW
 BEGIN
 
 insert into logs
-Values(s_logs.nextval, user, 'INSERT', SYSDATE, 'Purchases' , :new.pur#);
+Values(log#_seq.nextval, user, 'INSERT', SYSDATE, 'Purchases' , :new.pur#);
 
 	
 END;
 /
-#trigger for qoh update
-#same problemm is trigger 2 and 3
+
 
 create or replace trigger qoh_update
 after update of qoh on Products
@@ -66,7 +60,7 @@ BEGIN
 
  
 	insert into logs
-	Values(s_logs.nextval, user, 'UPDATE', SYSDATE, 'Products' , :old.pid);
+	Values(log#_seq.nextval, user, 'UPDATE', SYSDATE, 'Products' , :old.pid);
 
 	
 END;
