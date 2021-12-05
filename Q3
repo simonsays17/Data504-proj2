@@ -12,3 +12,4 @@ begin
 	from customers c, purchases p
 	where c.cid=p.cid and c.cid=cust_id;
 end;
+/
