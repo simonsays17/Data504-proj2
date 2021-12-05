@@ -12,21 +12,21 @@ begin
   select eid, name, telephone#, email into new employees
   from employees;
 end;
-
+/
 create or replace procedure show_products(new_products out products%rowtype)
 is
 begin
   select pid, name, qoh, qoh_threshold, regular_price, discnt_rate into new_products
   from products;
 end;
-
+/
 create or replace procedure show_purchases(new_purchases out purchases%rowtype)
 is
 begin 
   select pur#, eid, pid, cid, pur_date, qty, unit_price, total, saving into new_purchases
   from purchases;
 end;
-
+/
 create or replace procedure show_logs(new_logs out logs%rowtype) 
 is
 begin
