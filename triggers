@@ -1,3 +1,45 @@
+
+create or replace trigger qoh_trig
+after insert on purchases
+for each row
+declare
+qoh products.qoh%type;
+nqoh products.qoh%type;
+nqoh_t products.qoh_threshold%type;
+low_qoh exception;
+begin
+update products set products.qoh = products.qoh - :new.qty where pid = :new.pid;
+select qoh, qoh_threshold into nqoh, nqoh_t from products where pid = :new.pid;
+if (qoh<nqoh_t) then raise low_qoh;
+end if;
+exception
+when low_qoh then
+dbms_output.put_line('The current qoh of the product is below the required threshold and new supply is required.');
+update products set qoh=qoh_threshold+10;
+dbms_output.put_line('New qoh is ' ||qoh);
+end;
+/
+
+create or replace trigger visit_trig
+after insert on purchases
+for each row
+declare 
+new_visit customers.last_visit_date%type;
+new_day exception;
+begin 
+select last_visit_date into new_visit
+from customers c, purchases p
+where c.cid=p.cid and pur#=:new.pur#;
+if (:new.pur_date!= new_visit) then raise new_day;
+end if;
+exception
+when new_day then
+update customers set last_visit_date=:new.pur_date;
+update customers set visits_made=visits_made+1;
+end;
+/
+
+
 /* Creating a trigger so that when there is an a new tuple added into the Customers table the user who performed it, 
 the operation used (insert) , the date when it was added, the table (customer), and the Cid of the 
 new customer are all logged in the log table. In addtion the sequence for creating new log#s is used here for the log#*\
@@ -80,3 +122,4 @@ BEGIN
 	
 END;
 /
+show errors
