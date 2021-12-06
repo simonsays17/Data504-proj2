@@ -1,9 +1,15 @@
+/* answer to question 1, creating a sequence so that in the event of a new purchase being made a new and unique pur# is 
+created for that event and is incrimently increasing by a factor of 1 */
+
 CREATE SEQUENCE pur#_seq
 start with 100001
 INCREMENT BY 1
 NOCACHE
 NOCYCLE;
 /
+
+/* answer to question 1, creating a sequence so that in the event of a new addition to the logs table a new and unique logg# is 
+created for that event and is incrimently increasing by a factor of 1 */
 
 CREATE SEQUENCE log#_seq
 start with 1001
