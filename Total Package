@@ -1,91 +1,3 @@
-create table logs
-(log# number(4) primary key,
-user_name varchar2(12) not null,
-operation varchar2(6) not null,
-op_time date not null,
-table_name varchar2(20) not null,
-tuple_pkey varchar2(6)); 
-
-CREATE SEQUENCE pur#_seq
-start with 100001
-INCREMENT BY 1
-NOCACHE
-NOCYCLE;
-/
-
-CREATE SEQUENCE log#_seq
-start with 1001
-INCREMENT BY 1
-NOCACHE
-NOCYCLE;
-/
-
-set serveroutput on
-create or replace procedure show_customers(new_customers out customers%rowtype)
-is
-begin
-select cid, name, telephone#, visits_made, last_visit_date into new_customers
-from customers;
-end;
-
-create or replace procedure show_employees(new_employees out employees%rowtype) 
-is
-begin
-  select eid, name, telephone#, email into new employees
-  from employees;
-end;
-/
-create or replace procedure show_products(new_products out products%rowtype)
-is
-begin
-  select pid, name, qoh, qoh_threshold, regular_price, discnt_rate into new_products
-  from products;
-end;
-/
-create or replace procedure show_purchases(new_purchases out purchases%rowtype)
-is
-begin 
-  select pur#, eid, pid, cid, pur_date, qty, unit_price, total, saving into new_purchases
-  from purchases;
-end;
-/
-create or replace procedure show_logs(new_logs out logs%rowtype) 
-is
-begin
-  select log#, user_name, operation, op_time, table_name, tuple_pkey into new_logs
-  from logs;
-end;
-/
-
-set serveroutput on
-create or replace procedure purchases_made(cust_id in customers.cid%type)
-is 
-cust_name customers.name%type;
-pur_pid purchases.pid%type;
-pur_pdate purchases.pur_date%type;
-pur_qty purchases.qty%type;
-pur_unitprice purchases.unit_price%type;
-pur_total purchases.total%type;
-begin
-	select c.name, p.pid, p.pur_date, p.qty, p.unit_price, p.total into cust_name, pur_pid, pur_pdate, pur_qty, pur_unitprice, pur_total
-	from customers c, purchases p
-	where c.cid=p.cid and c.cid=cust_id;
-exception when NO_DATA_FOUND then
-	dbms_output.put_line('Invalid customer id');
-end;
-/
-CREATE or REPLACE FUNCTION number_customers(n_pid Purchases.pid%TYPE)
-	RETURN NUMBER
-	IS cust_cnt NUMBER;
-	BEGIN 
-		SELECT COUNT(c.cid) 
-		INTO cust_cnt
-		FROM customers c, purchases p
-		WHERE c.cid=p.cid AND p.pid=n_pid;
-		RETURN(cust_cnt);
-	EXCEPTION when NO_DATA_FOUND then
-		dbms_output.put_line('Invalid product id');
-	END;
 /
 set serveroutput on
 create or replace procedure add_customer(c_id in customers.cid%type, c_name in customers.name%type, c_telephone# in customers.telephone#%type)
@@ -213,6 +125,24 @@ BEGIN
 
 insert into logs
 Values(log#_seq.nextval, user, 'INSERT', SYSDATE, 'Purchases' , :new.pur#);
+
+	
+END;
+/
+
+
+create or replace trigger qoh_update
+after update of qoh on Products
+for EACH ROW
+BEGIN
+
+ 
+	insert into logs
+	Values(log#_seq.nextval, user, 'UPDATE', SYSDATE, 'Products' , :old.pid);
+
+	
+END;
+/
 
 	
 END;
