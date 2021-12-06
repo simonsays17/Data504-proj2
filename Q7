@@ -1,3 +1,6 @@
+/* Creating a trigger so that when there is an a new tuple added into the Customers table the user who performed it, 
+the operation used (insert) , the date when it was added, the table (customer), and the Cid of the 
+new customer are all logged in the log table. In addtion the sequence for creating new log#s is used here for the log#*\
 
 create or replace trigger add_cust_log 
 after insert on Customers
@@ -11,6 +14,9 @@ BEGIN
 	
 END;
 /
+/* Creating a trigger so that when there is a new visit by a customer in the Customers table. The user who performed it, 
+the operation used (update) , the date when it was added, the table (customers), and the Cid of the 
+customer are all logged in the log table. In addtion the sequence for creating new log#s is used here for the log#*\
 
 
 create or replace trigger update_cust
@@ -25,6 +31,9 @@ END;
 /
 
 
+/* Creating a trigger so that when there is a new visit by a customer adn it changes the amount of visits_made by the customer 
+in the Customers table. The user who performed it,  the operation used (update) , the date when it was added, the table (customers), 
+and the Cid of the customer are all logged in the log table. In addtion the sequence for creating new log#s is used here for the log#*\
 
 create or replace trigger cust_visits_made 
 after update of visits_made on Customers
@@ -39,6 +48,9 @@ BEGIN
 END;
 /
 
+/* Creating a trigger so that when there is a new purchase made. The user who performed it, 
+the operation used (insert) , the date when it was added, the table (purchases), and the pur# of the 
+customer are all logged in the log table. In addtion the sequence for creating new log#s is used here for the log#*\
 
 create or replace trigger add_pur_log 
 after insert on Purchases
@@ -52,6 +64,9 @@ Values(log#_seq.nextval, user, 'INSERT', SYSDATE, 'Purchases' , :new.pur#);
 END;
 /
 
+/* Creating a trigger so that when there is a new purchase made and the qoh is changed. The user who performed it, 
+the operation used (update) , the date when it was added, the table (products), and the pid of the 
+products are all logged in the log table. In addtion the sequence for creating new log#s is used here for the log#*\
 
 create or replace trigger qoh_update
 after update of qoh on Products
