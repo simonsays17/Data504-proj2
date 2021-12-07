@@ -1,3 +1,4 @@
+/*Creation of the package to store procedures and functions for the project*/
 create or replace package proj2 as
 procedure show_customers(new_emp out sys_refcursor);
 procedure show_products(new_prod out sys_refcursor);
@@ -11,9 +12,10 @@ procedure add_purchase(e_id in purchases.eid%type, p_id in purchases.pid%type, c
 end;
 /
 show errors
-
+/* package body creation */
 create or replace package body proj2 as
 
+/* creation of procedure to display all tuples for customers */
 procedure show_customers(new_emp out sys_refcursor) as
 begin
 open new_emp for
@@ -21,7 +23,7 @@ select cid, name, telephone#, visits_made, last_visit_date
 from customers;
 end;
 
-
+/* creation of procedure to display all tuples for products */
 procedure show_products(new_prod out sys_refcursor) as
 begin
 open new_prod for
@@ -29,6 +31,7 @@ select pid, name, qoh, qoh_threshold, regular_price, discnt_rate
 from products;
 end;
 
+/* creation of procedure to display all tuples for purchases */
 procedure show_purchases(new_purch out sys_refcursor) as
 begin 
 open new_purch for
@@ -36,6 +39,7 @@ select pur#, eid, pid, cid, pur_date, qty, unit_price, total, saving
 from purchases;
 end;
 
+/* creation of procedure to display all tuples for logs */
 procedure show_logs(new_logs out sys_refcursor) as
 begin
 open new_logs for
@@ -44,7 +48,7 @@ from logs;
 end;
 
 
-
+/* creation of procedure to output pid, pur_date, qty, unit_price, total that an input of a specific CID has */
 procedure purchases_made(in_id in purchases.cid%type, pur_cur out sys_refcursor) as
 ncid customers.cid%type;
 begin
@@ -59,6 +63,7 @@ exception when NO_DATA_FOUND then
 	dbms_output.put_line('Invalid customer id');
 end;
 
+/* creation of a function to report the number of customers who purchases a specfic product based on a pid that is inputed in the funciton*/
 function number_customers(n_pid in Purchases.pid%TYPE)
 	RETURN NUMBER
 	IS cust_cnt NUMBER;
@@ -72,7 +77,7 @@ function number_customers(n_pid in Purchases.pid%TYPE)
 		dbms_output.put_line('Invalid product id');
 	END;
 
-
+/* creation of procedure to add a tuple into the customers table base on the inputs of cid, customer name, and customer telephone number*/
 procedure add_customer(c_id in customers.cid%type, c_name in customers.name%type, c_telephone# in customers.telephone#%type)
 is
 c_visit_date customers.last_visit_date%type;
@@ -82,7 +87,7 @@ from dual;
 insert into customers values(c_id, c_name, c_telephone#, 1, c_visit_date);
 end;
 
-
+/* creation of procedure to add a tuple into the procedure table base on the inputs of eid, pid, cid, pur_qty, pur_unit_price*/
 procedure add_purchase(e_id in purchases.eid%type, p_id in purchases.pid%type, c_id in purchases.cid%type, pur_qty in purchases.qty%type, pur_unit_price in purchases.unit_price%type)
 is
 p_pur_date purchases.pur_date%type;
