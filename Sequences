@@ -1,5 +1,7 @@
 /* answer to question 1, creating a sequence so that in the event of a new purchase being made a new and unique pur# is 
-created for that event and is incrimently increasing by a factor of 1 */
+created for that event and is incrimently increasing by a factor of 1. We use (start with) to get the sequence to start at 10001 
+and INCREMENT to increase by a factor of 1. No cahce makes sure there is not preallocated values being stored. NOCYCLE 
+ensures the sequence does not cycle through the same values*/
 
 CREATE SEQUENCE pur#_seq
 start with 100001
