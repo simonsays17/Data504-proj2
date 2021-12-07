@@ -124,7 +124,9 @@ insert into customers values(c_id, c_name, c_telephone#, 1, c_visit_date);
 end;
 
 /* creation of procedure to add a tuple into the procedure table base on the inputs of eid, pid, cid, pur_qty, pur_unit_price. 
-The procedure */
+The procedure starts by defining the inputs then selecting qoh based on the inputed pid. Then calculating price after discount rate 
+and multiplying it by the quantity making that the new price(nprice) and date is found using SYSDATE. These are then inserted into the new tuple. An if statement is run to ensure that
+there is enough quanity on hand for the pruchase. If there is not enoug then (invalid_qty) is raised which then ouputs the line('Insufficient qoh')*/
 procedure add_purchase(e_id in purchases.eid%type, p_id in purchases.pid%type, c_id in purchases.cid%type, pur_qty in purchases.qty%type, pur_unit_price in purchases.unit_price%type) is 
 nqoh products.qoh%type;
 nprice purchases.total%type;
