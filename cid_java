@@ -19,38 +19,16 @@ public class demo_insert {
       OracleDataSource ds = new oracle.jdbc.pool.OracleDataSource();
       ds.setURL("jdbc:oracle:thin:@castor.cc.binghamton.edu:1521:acad111");
       Connection conn = ds.getConnection("mdara1", "nyyfan20");
-
-      //Insert
-      PreparedStatement insert = conn.prepareStatement("INSERT into customers VALUES(?,?,?,?,?)");
-
-      //Input Cid from keyboard
-        BufferedReader  readKeyBoard;
-        String          cid;
-        String customer_name;
-        String telephone_#;
-        String visits_made;
-        String last_visit_made;
-
-        readKeyBoard = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print("Please enter CID:");
-        cid = readKeyBoard.readLine();
-        insert.setString(1, cid);
-
-      //Input other values
-        insert.setString(2, customer_name);
-        insert.setString(3, telephone_#);
-        insert.setString(4, visits_made);
-        insert.setString(5, last_visit_made);
-       
-
-      // Query
-      Statement stmt = conn.createStatement ();
-
-      // Save result
-        ResultSet rset;
-        rset = stmt.executeQuery ("SELECT * FROM customers where cid ='"+cid+"'");
-
-      // Print
+      
+      //query
+      statement stmt=conn.createStatement();
+      
+      //Save Result
+      ResultSet rset;
+      rset= stmt.executeQuery('Select * From Customers');
+      
+      
+       // Print
       while (rset.next ()) {
          System.out.print (rset.getString (1)+"  ");
          System.out.print (rset.getString (2)+"  ");
@@ -63,6 +41,14 @@ public class demo_insert {
       rset.close();
       stmt.close();
       conn.close();
+
+      //Input Cid from keyboard
+        BufferedReader  readKeyBoard;
+        String          cid;
+        String customer_name;
+        String telephone_#;
+        String visits_made;
+        String last_visit_made;
 
       
    }
