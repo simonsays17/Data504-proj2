@@ -1,11 +1,12 @@
 /*Creation of the package in which to store procedures and functions for the project together
 The package specificication below names which procedures and functions will be in the package a*/
 create or replace package proj2 as
-procedure show_customers(new_emp out sys_refcursor);
-procedure show_products(new_prod out sys_refcursor);
-procedure show_purchases(new_purch out sys_refcursor);
-procedure show_logs(new_logs out sys_refcursor);
-procedure purchases_made(in_id in purchases.cid%type, pur_cur out sys_refcursor);
+procedure show_customers;
+procedure show_products;
+procedure show_purchases;
+procedure show_employees;
+procedure show_logs;
+procedure purchases_made(in_cid in purchases.cid%type);
 function number_customers(n_pid in purchases.pid%type)
 return number;
 procedure add_customer(c_id in customers.cid%type, c_name in customers.name%type, c_telephone# in customers.telephone#%type);
@@ -17,51 +18,71 @@ show errors
 create or replace package body proj2 as
 
 /* creation of procedure to display all tuples for customers */
-procedure show_customers(new_emp out sys_refcursor) as
+procedure show_customers is
 begin
-open new_emp for
+for r in(
 select cid, name, telephone#, visits_made, last_visit_date
-from customers;
+from customers)
+loop
+dbms_output.put_line(r.cid||','||r.name||','||r.telephone#||'.'|| r.visits_made||'.'||r.last_visit_date);
+end loop;
+end;
+/* creation of procedure to display all tuples for employees */
+procedure show_employees as
+begin
+for r in (
+select eid, name, telephone#, email
+from employees)
+loop 
+dbms_output.put_line(r.eid||','||r.name||','||r.telephone#||','|| r.email);
+end loop;
 end;
 
 /* creation of procedure to display all tuples for products */
-procedure show_products(new_prod out sys_refcursor) as
+procedure show_products as
 begin
-open new_prod for
+for r in (
 select pid, name, qoh, qoh_threshold, regular_price, discnt_rate
-from products;
+from products)
+loop
+dbms_output.put_line(r.pid||','||r.name||','||r.qoh||','|| r.qoh_threshold||','||r.regular_price||','||r.discnt_rate);
+end loop;
 end;
 
 /* creation of procedure to display all tuples for purchases */
-procedure show_purchases(new_purch out sys_refcursor) as
+procedure show_purchases as
 begin 
-open new_purch for
+for r in(
 select pur#, eid, pid, cid, pur_date, qty, unit_price, total, saving
-from purchases;
+from purchases)
+loop
+dbms_output.put_line(r.pur#||','||r.eid||','||r.pid||','|| r.cid||','||r.pur_date||','||r.qty||','||r.unit_price||','||r.total||','||r.saving);
+end loop;
 end;
 
 /* creation of procedure to display all tuples for logs */
-procedure show_logs(new_logs out sys_refcursor) as
 begin
-open new_logs for
+for r in(
 select log#, user_name, operation, op_time, table_name, tuple_pkey
-from logs;
+from logs)
+loop
+dbms_output.put_line(r.log#||','||r.user_name||','||r.operation||','|| r.op_time||','||r.table_name||','||r.tuple_pkey);
+end loop;
 end;
 
 
 /* creation of procedure to output pid, pur_date, qty, unit_price, total that an input of a specific CID has */
-procedure purchases_made(in_id in purchases.cid%type, pur_cur out sys_refcursor) as
-ncid customers.cid%type;
+procedure purchases_made(in_cid in purchases.cid%type) as
 begin
-select cid into ncid 
+for r in (
+select * from 
+(select cid, name  
 from customers 
-where cid=in_id;
-open pur_cur for
-select c.name, p.pid, p.pur_date, p.qty, p.unit_price, p.total
-from customers c, purchases p
-where c.cid=p.cid and c.cid=ncid;
-exception when NO_DATA_FOUND then
-	dbms_output.put_line('Invalid customer id');
+where cid=in_cid) z, 
+(select pid, pur_date, qty, unit_price, total from Purchases where cid=in_cid) y )
+loop
+dbms_output.put_line(r.cid||','||r.name||','||r.pid||','||r.pur_date||','||r.qty||','||r.unit_price||','||r.total);
+end loop;
 end;
 
 /* creation of a function to report the number of customers who purchases a specfic product based on a pid that is inputed in the funciton*/
@@ -89,30 +110,24 @@ insert into customers values(c_id, c_name, c_telephone#, 1, c_visit_date);
 end;
 
 /* creation of procedure to add a tuple into the procedure table base on the inputs of eid, pid, cid, pur_qty, pur_unit_price*/
-procedure add_purchase(e_id in purchases.eid%type, p_id in purchases.pid%type, c_id in purchases.cid%type, pur_qty in purchases.qty%type, pur_unit_price in purchases.unit_price%type)
-is
+procedure add_purchase(e_id in purchases.eid%type, p_id in purchases.pid%type, c_id in purchases.cid%type, pur_qty in purchases.qty%type, pur_unit_price in purchases.unit_price%type) is 
+nqoh products.qoh%type;
+nprice purchases.total%type;
 p_pur_date purchases.pur_date%type;
-p_regular_price products.regular_price%type;
-p_qoh products.qoh%type;
-status boolean;
 invalid_qty exception;
 begin
+select qoh into nqoh from products where pid= p_id;
+select (pur_unit_price * (1-discnt_rate)) into nprice from products where pid=p_id; 
+nprice:= nprice*pur_qty;
 select to_char(sysdate,'dd-mon-yy') into p_pur_date
 from dual;
-select regular_price into p_regular_price
-from purchases p, products r
-where p.pid=r.pid and p.pid=p_id;
-select qoh into p_qoh
-from purchases p, products r
-where p.pid=r.pid and p.pid=p_id;
-insert into purchases values(pur#_seq.nextval, e_id, p_id, c_id, p_pur_date, pur_qty, pur_unit_price, pur_qty*pur_unit_price, p_regular_price-pur_qty*pur_unit_price);
-status:= true;
-if pur_qty>p_qoh then
+if (pur_qty>nqoh) then
 raise invalid_qty;
+else
+insert into purchases values(pur#_seq.nextval, e_id, p_id, c_id, p_pur_date, pur_qty, pur_unit_price, (pur_qty*pur_unit_price), nprice);
 end if;
 exception
 when invalid_qty then
-status:= false;
 dbms_output.put_line('Insufficient qoh');
 end;
 end;
