@@ -10,7 +10,7 @@ NOCACHE
 NOCYCLE;
 /
 
-/* answer to question 1, creating a sequence so that in the event of a new addition to the logs table a new and unique logg# is 
+/* answer to question 1, creating a sequence so that in the event of a new addition to the logs table a new and unique log# is 
 created for that event and is incrimently increasing by a factor of 1 */
 
 CREATE SEQUENCE log#_seq
