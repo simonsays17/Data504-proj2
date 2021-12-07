@@ -1,5 +1,5 @@
-// usage:  1. compile: javac -cp /usr/lib/oracle/18.3/client64/lib/ojdbc8.jar jdbcdemo1.java
-//         2. execute: java -cp /usr/lib/oracle/18.3/client64/lib/ojdbc8.jar jdbcdemo1.java
+// usage:  1. compile: javac -cp /usr/lib/oracle/18.3/client64/lib/ojdbc8.jar cust_find.java
+//         2. execute: java -cp /usr/lib/oracle/18.3/client64/lib/ojdbc8.jar cust_find.java
 import java.sql.*;
 import oracle.jdbc.*;
 import java.math.*;
@@ -7,7 +7,7 @@ import java.io.*;
 import java.awt.*;
 import oracle.jdbc.pool.OracleDataSource;
 
-public class demo_insert {
+public class select_cust {
 
    public static void main (String args []) throws SQLException {
     try
@@ -33,13 +33,9 @@ public class demo_insert {
         readKeyBoard = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Please enter CID:");
         cid = readKeyBoard.readLine();
-        insert.setString(1, cid);
+        
 
-      //Input other values
-        insert.setString(2, customer_name);
-        insert.setString(3, telephone_#);
-        insert.setString(4, visits_made);
-        insert.setString(5, last_visit_made);
+     
        
 
       // Query
@@ -50,12 +46,12 @@ public class demo_insert {
         rset = stmt.executeQuery ("SELECT * FROM customers where cid ='"+cid+"'");
 
       // Print
-      while (rset.next ()) {
-         System.out.print (rset.getString (1)+"  ");
-         System.out.print (rset.getString (2)+"  ");
-         System.out.print (rset.getString (3)+"  ");
-         System.out.print (rset.getString (4)+"  ");
-         System.out.print (rset.getString (5)+"  ");
+      while (rset.next()) {
+         System.out.print (rset.getString(1)+"  ");
+         System.out.print (rset.getString(2)+"  ");
+         System.out.print (rset.getString(3)+"  ");
+         System.out.print (rset.getString(4)+"  ");
+         System.out.print (rset.getString(5)+"  ");
          //System.out.println (rset.getString (6)+"  ");
       }
       //close
