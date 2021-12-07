@@ -7,7 +7,7 @@ import java.io.*;
 import java.awt.*;
 import oracle.jdbc.pool.OracleDataSource;
 
-public class demo_sel {
+public class demo_insert {
 
    public static void main (String args []) throws SQLException {
     try
@@ -20,12 +20,34 @@ public class demo_sel {
       ds.setURL("jdbc:oracle:thin:@castor.cc.binghamton.edu:1521:acad111");
       Connection conn = ds.getConnection("mdara1", "nyyfan20");
 
+      
+
+      //Input Cid from keyboard
+        BufferedReader  readKeyBoard;
+        String          cid;
+        String customer_name;
+        String telephone_num;
+        String visits_made;
+        String last_visit_made;
+
+        readKeyBoard = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Please enter CID:");
+        cid = readKeyBoard.readLine();
+        insert.setString(1, cid);
+
+      //Input other values
+        insert.setString(2, customer_name);
+        insert.setString(3, telephone_#);
+        insert.setString(4, visits_made);
+        insert.setString(5, last_visit_made);
+       
+
       // Query
       Statement stmt = conn.createStatement ();
 
       // Save result
         ResultSet rset;
-        rset = stmt.executeQuery ("SELECT * FROM customers");
+        rset = stmt.executeQuery ("SELECT * FROM customers where cid ='"+cid+"'");
 
       // Print
       while (rset.next ()) {
