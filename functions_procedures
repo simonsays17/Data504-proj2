@@ -1,3 +1,4 @@
+/* package creation for stored procedures and functions */
 create or replace package proj2 as
 
 
@@ -8,7 +9,7 @@ select cid, name, telephone#, visits_made, last_visit_date
 from customers;
 end;
 
-
+/* procedure to show all tuples in the customers table */
 declare
 curs sys_refcursor;
 ncid customers.cid%type;
@@ -26,6 +27,7 @@ dbms_output.put_line( ncid || ' | ' || nname || ' | ' || ntelephone# || ' | ' ||
 end loop;
 close curs;
 end;
+
 
 create or replace procedure show_products(new_prod out sys_refcursor) as
 begin
