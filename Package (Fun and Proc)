@@ -1,5 +1,6 @@
 /*Creation of the package in which to store procedures and functions for the project together
 The package specificication below names which procedures and functions will be in the package as well as their input parameters*/
+
 create or replace package proj2 as
 procedure show_customers;
 procedure show_products;
