@@ -1,5 +1,5 @@
 /*Creation of the package in which to store procedures and functions for the project together
-The package specificication below names which procedures and functions will be in the package a*/
+The package specificication below names which procedures and functions will be in the package as well as their input parameters*/
 create or replace package proj2 as
 procedure show_customers;
 procedure show_products;
@@ -14,10 +14,12 @@ procedure add_purchase(e_id in purchases.eid%type, p_id in purchases.pid%type, c
 end;
 /
 show errors
-/* package body creation */
+/* package body creation, this will contain the code for each of the procedures and functions in the package */
 create or replace package body proj2 as
 
-/* creation of procedure to display all tuples for customers */
+/* creation of procedure to display all tuples for customers
+we iterate using a loop through all of the attributes in Customers to then output which is formated using dbms_output.putline
+which formats how the output will look*/
 procedure show_customers is
 begin
 for r in(
@@ -27,7 +29,8 @@ loop
 dbms_output.put_line(r.cid||','||r.name||','||r.telephone#||'.'|| r.visits_made||'.'||r.last_visit_date);
 end loop;
 end;
-/* creation of procedure to display all tuples for employees */
+/* creation of procedure to display all tuples for Employees we iterate using a loop through all of the attributes in Employees to then output which is formated using dbms_output.putline
+which formats how the output will look */
 procedure show_employees as
 begin
 for r in (
@@ -38,7 +41,8 @@ dbms_output.put_line(r.eid||','||r.name||','||r.telephone#||','|| r.email);
 end loop;
 end;
 
-/* creation of procedure to display all tuples for products */
+/* creation of procedure to display all tuples for products we iterate using a loop through all of the attributes in Products to then output which is formated using dbms_output.putline
+which formats how the output will look */
 procedure show_products as
 begin
 for r in (
@@ -49,7 +53,8 @@ dbms_output.put_line(r.pid||','||r.name||','||r.qoh||','|| r.qoh_threshold||','|
 end loop;
 end;
 
-/* creation of procedure to display all tuples for purchases */
+/* creation of procedure to display all tuples for purchases we iterate using a loop through all of the attributes in Purchases to then output which is formated using dbms_output.putline
+which formats how the output will look*/
 procedure show_purchases as
 begin 
 for r in(
@@ -60,7 +65,8 @@ dbms_output.put_line(r.pur#||','||r.eid||','||r.pid||','|| r.cid||','||r.pur_dat
 end loop;
 end;
 
-/* creation of procedure to display all tuples for logs */
+/* creation of procedure to display all tuples for logs we iterate using a loop through all of the attributes in logs to then output which is formated using dbms_output.putline
+which formats how the output will look */
 begin
 for r in(
 select log#, user_name, operation, op_time, table_name, tuple_pkey
@@ -71,21 +77,27 @@ end loop;
 end;
 
 
-/* creation of procedure to output pid, pur_date, qty, unit_price, total that an input of a specific CID has */
+/* creation of procedure to output pid, pur_date, qty, unit_price, total that an input of a specific CID has. A for loop is created to 
+iterate through the queries created which collect all the values from the two sub queries created, which select the cid, name, pid, pur_date,
+qty, unit_price, total based on the input of a cid throught the use of a where statement in both sub quereies.The output is formated using dbms_output.putline
+which formats how the output will look. An exception for the use of a cid that does not exist. */
 procedure purchases_made(in_cid in purchases.cid%type) as
 begin
 for r in (
 select * from 
 (select cid, name  
 from customers 
-where cid=in_cid) z, 
-(select pid, pur_date, qty, unit_price, total from Purchases where cid=in_cid) y )
+where cid=in_cid) , 
+(select pid, pur_date, qty, unit_price, total from Purchases where cid=in_cid))
 loop
 dbms_output.put_line(r.cid||','||r.name||','||r.pid||','||r.pur_date||','||r.qty||','||r.unit_price||','||r.total);
 end loop;
 end;
 
-/* creation of a function to report the number of customers who purchases a specfic product based on a pid that is inputed in the funciton*/
+/* creation of a function to report the number of customers who purchases a specfic product based on a pid that is inputed in the funciton. 
+We tell the function to Return and number and make cust_cnt a NUMBER as well. We then begin the fucniton selecting the count of the cids for a 
+inputed pid and using INTO store it in cust_cnt and return that for the function. The exception is created to display 'Invalid product ID' if no 
+data is found for an inputed pid.*/
 function number_customers(n_pid in Purchases.pid%TYPE)
 	RETURN NUMBER
 	IS cust_cnt NUMBER;
@@ -99,7 +111,9 @@ function number_customers(n_pid in Purchases.pid%TYPE)
 		dbms_output.put_line('Invalid product id');
 	END;
 
-/* creation of procedure to add a tuple into the customers table base on the inputs of cid, customer name, and customer telephone number*/
+/* creation of procedure to add a tuple into the customers table base on the inputs of cid, customer name, and customer telephone number
+The procedure inputs are defined and the procedure begins by inserting all the inputs as well as the SYSData as visit_date and then creates 
+the tuple for a new customer.*/
 procedure add_customer(c_id in customers.cid%type, c_name in customers.name%type, c_telephone# in customers.telephone#%type)
 is
 c_visit_date customers.last_visit_date%type;
@@ -109,7 +123,8 @@ from dual;
 insert into customers values(c_id, c_name, c_telephone#, 1, c_visit_date);
 end;
 
-/* creation of procedure to add a tuple into the procedure table base on the inputs of eid, pid, cid, pur_qty, pur_unit_price*/
+/* creation of procedure to add a tuple into the procedure table base on the inputs of eid, pid, cid, pur_qty, pur_unit_price. 
+The procedure */
 procedure add_purchase(e_id in purchases.eid%type, p_id in purchases.pid%type, c_id in purchases.cid%type, pur_qty in purchases.qty%type, pur_unit_price in purchases.unit_price%type) is 
 nqoh products.qoh%type;
 nprice purchases.total%type;
