@@ -1,5 +1,5 @@
-// usage:  1. compile: javac -cp /usr/lib/oracle/18.3/client64/lib/ojdbc8.jar jdbcdemo1.java
-//         2. execute: java -cp /usr/lib/oracle/18.3/client64/lib/ojdbc8.jar jdbcdemo1.java
+// usage:  1. compile: javac -cp /usr/lib/oracle/18.3/client64/lib/ojdbc8.jar select_customers.java
+//         2. execute: java -cp /usr/lib/oracle/18.3/client64/lib/ojdbc8.jar select_customers.java
 import java.sql.*;
 import oracle.jdbc.*;
 import java.math.*;
@@ -7,7 +7,7 @@ import java.io.*;
 import java.awt.*;
 import oracle.jdbc.pool.OracleDataSource;
 
-public class demo_insert {
+public class demo_proj {
 
    public static void main (String args []) throws SQLException {
     try
@@ -18,14 +18,14 @@ public class demo_insert {
       //consideration, it's better to read them in from keyboard.
       OracleDataSource ds = new oracle.jdbc.pool.OracleDataSource();
       ds.setURL("jdbc:oracle:thin:@castor.cc.binghamton.edu:1521:acad111");
-      Connection conn = ds.getConnection("mdara1", "nyyfan20");
+      Connection conn = ds.getConnection("bsimons2", "acsd2415");
       
       //query
-      statement stmt=conn.createStatement();
+      Statement stmt=conn.createStatement();
       
       //Save Result
       ResultSet rset;
-      rset= stmt.executeQuery('Select * From Customers');
+      rset= stmt.executeQuery("Select * From Customers");
       
       
        // Print
@@ -46,7 +46,7 @@ public class demo_insert {
         BufferedReader  readKeyBoard;
         String          cid;
         String customer_name;
-        String telephone_#;
+        String telephone_num;
         String visits_made;
         String last_visit_made;
 
