@@ -1,4 +1,5 @@
-/*Trigger after an insert is done on purchases */
+/*Trigger after an insert is done on purchases it updates the qoh and makes sure that the qoh is above the threhsold and an exception is risen
+if the current qoh is above the required threshold.*/
 create or replace trigger qoh_trig
 after insert on purchases
 for each row
@@ -20,7 +21,7 @@ dbms_output.put_line('New qoh is ' ||qoh);
 end;
 /
 
-/**/
+/*Trigger to update last_visit adn visits made for a customer after an insert on purchases*/
 create or replace trigger visit_trig
 after insert on purchases
 for each row
