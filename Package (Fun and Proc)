@@ -1,4 +1,5 @@
-/*Creation of the package to store procedures and functions for the project*/
+/*Creation of the package in which to store procedures and functions for the project together
+The package specificication below names which procedures and functions will be in the package a*/
 create or replace package proj2 as
 procedure show_customers(new_emp out sys_refcursor);
 procedure show_products(new_prod out sys_refcursor);
